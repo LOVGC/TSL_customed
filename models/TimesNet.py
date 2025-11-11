@@ -126,7 +126,7 @@ class Model(nn.Module):
     def forecast(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
         # Normalization from Non-stationary Transformer(这个技巧来自论文： Non-stationary Transformer)
         # 其实就是对时间序列做了一个归一化处理，这里好像是 instance norm.
-        means = x_enc.mean(1, keepdim=True).detach()  # means: [B, 1, C]
+        means = x_enc.mean(1, keepdim=True).detach()  # [B, 1, C]
         x_enc = x_enc.sub(means) # (B, T, C)
         stdev = torch.sqrt(
             torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)

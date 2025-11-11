@@ -20,6 +20,12 @@ class Dataset_ETT_hour(Dataset):
     def __init__(self, args, root_path, flag='train', size=None,
                  features='S', data_path='ETTh1.csv',
                  target='OT', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
+        '''
+        __init__() is the constructor used to initialize various parameters and attributes of the dataset. 
+        It takes a series of arguments, including the path to the data file, the dataset's flag (e.g., train, validate, test), 
+        dataset size, feature type, target variable, whether to scale the data, time encoding, time frequency, and more. 
+        These parameters are used to configure how the dataset is loaded and processed.
+        '''
         # size [seq_len, label_len, pred_len]
         self.args = args
         # info
@@ -47,6 +53,9 @@ class Dataset_ETT_hour(Dataset):
         self.__read_data__()
 
     def __read_data__(self):
+        '''
+        The actual process of managing data file into usable data pieces happens in __read_data__()
+        '''
         self.scaler = StandardScaler()
 
         #get raw data from path
@@ -342,19 +351,15 @@ class Dataset_Custom(Dataset):
 
 class Dataset_Berkeley_sensor(Dataset):
     def __init__(self, args, root_path, flag='train', size=None,
-                 features='S', data_path='ETTh1.csv',
-                 target='OT', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
+                 features='S', data_path='moteid_3_temp_volt.csv',
+                 target=None, scale=True, timeenc=None, freq='h', seasonal_patterns=None):
         # size [seq_len, label_len, pred_len]
         self.args = args
         # info
-        if size == None:
-            self.seq_len = 24 * 4 * 4
-            self.label_len = 24 * 4
-            self.pred_len = 24 * 4
-        else:
-            self.seq_len = size[0]
-            self.label_len = size[1]
-            self.pred_len = size[2]
+        self.seq_len = size[0]
+        self.label_len = size[1]
+        self.pred_len = size[2]
+
         # init
         assert flag in ['train', 'test', 'val']
         type_map = {'train': 0, 'val': 1, 'test': 2}
