@@ -35,3 +35,7 @@ This project uses `uv` for managing Python dependencies and running scripts.
 ## Example Commands for Gemini CLI
 Here are some example commands for your reference:
 *   To run a script (e.g., `main.py`): `uv run python main.py`
+
+
+## when create new code 
+* save newly created code @GEMINI_code
