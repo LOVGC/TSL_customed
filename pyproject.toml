@@ -1,0 +1,40 @@
+[project]
+name = "tsl-customed"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "einops",
+    "local-attention",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "patool",
+    "pywavelets",
+    "reformer-pytorch",
+    "scikit-learn",
+    "scipy",
+    "sktime",
+    "sympy",
+    "tqdm",
+    "torch>=2.7.0",
+]
+
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.1.0",
+]
+
+
