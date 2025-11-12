@@ -41,24 +41,62 @@
                 "--is_training", "1",
                 "--root_path", "./dataset/ETT-small/",
                 "--data_path", "ETTh1.csv",
-                "--model_id", "ETTh1_96_32",
+                "--model_id", "ETTh1_96_96",
                 "--model", "TimesNet",
                 "--data", "ETTh1",
-                "--features", "S",
+                "--features", "M",
+                "--target", "OT", // 预测的目标 feature, 要预测哪个变量，i.e. 就是 raw data 中的哪一列的名字。
                 "--seq_len", "96",
                 "--label_len", "48",
-                "--pred_len", "32",
+                "--pred_len", "96",
                 "--e_layers", "2",
                 "--d_layers", "1",
-                "--factor", "3",
-                "--enc_in", "1",  // number of features in raw data, 这个参数定义的是模型的 DataEmbedding  的输入 attribute 数量
-                "--dec_in", "7",  // 这个 dec_in 是啥？
-                "--c_out", "5",
+                "--factor", "3", // 跟 attention 有关
+                "--enc_in", "7",  // number of features in raw data, 这个参数定义的是模型的 DataEmbedding  的输入 attribute 数量
+                "--dec_in", "7",  // 这个 dec_in 是啥？TimesNet 没用到 这个参数，所以随便设置
+                "--c_out", "7",  // number of features to predict
                 "--d_model", "16",
                 "--d_ff", "32",
                 "--des", "Exp",
                 "--itr", "1",
                 "--top_k", "5"
+            ]
+        },
+
+        {
+            "name": "Python: test TimesNet Long-Term Forecast (Learning)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"
+            },
+            "args": [
+                "--task_name", "long_term_forecast",
+                "--is_training", "0",
+                "--root_path", "./dataset/ETT-small/",
+                "--data_path", "ETTh1.csv",
+                "--model_id", "ETTh1_96_96",
+                "--model", "TimesNet",
+                "--data", "ETTh1",
+                "--features", "M",
+                "--target", "OT", // 预测的目标 feature, 要预测哪个变量，i.e. 就是 raw data 中的哪一列的名字。
+                "--seq_len", "96",
+                "--label_len", "48",
+                "--pred_len", "96",
+                "--e_layers", "2",
+                "--d_layers", "1",
+                "--factor", "3", // 跟 attention 有关
+                "--enc_in", "7",  // number of features in raw data, 这个参数定义的是模型的 DataEmbedding  的输入 attribute 数量
+                "--dec_in", "7",  // 这个 dec_in 是啥？TimesNet 没用到 这个参数，所以随便设置
+                "--c_out", "7",  // number of features to predict
+                "--d_model", "16",
+                "--d_ff", "32",
+                "--des", "Exp",
+                "--itr", "1",
+                "--top_k", "5",
+                // "--inverse" // 进行反归一化，把预测结果从标准化空间变回原始空间
             ]
         }
     ]

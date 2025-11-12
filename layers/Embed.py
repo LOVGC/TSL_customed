@@ -148,7 +148,7 @@ class DataEmbedding(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, x, x_mark):
-        if x_mark is None:
+        if x_mark is None: # x_mark 可以是 None 啊
             x = self.value_embedding(x) + self.position_embedding(x)
         else:
             x = self.value_embedding(

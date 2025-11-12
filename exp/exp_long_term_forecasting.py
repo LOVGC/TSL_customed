@@ -148,7 +148,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     loss = criterion(outputs, batch_y)
                     train_loss.append(loss.item())
 
-                if (i + 1) % 100 == 0:
+                if (i + 1) % 100 == 0: # 每 100 次 weight updates 打印一次训练状态
                     print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
                     speed = (time.time() - time_now) / iter_count
                     left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i) # 完成所有训练还需要多少时间（以秒为单位）。这里指的是完成所有的 weight updates (若干个 epoch) 还需要多少时间。
@@ -226,8 +226,8 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     outputs = test_data.inverse_transform(outputs.reshape(shape[0] * shape[1], -1)).reshape(shape)
                     batch_y = test_data.inverse_transform(batch_y.reshape(shape[0] * shape[1], -1)).reshape(shape)
 
-                outputs = outputs[:, :, f_dim:]
-                batch_y = batch_y[:, :, f_dim:]
+                outputs = outputs[:, :, f_dim:] # 如果，预测的是单变量，那么只取最后一列作为预测结果
+                batch_y = batch_y[:, :, f_dim:] # 从这里的 f_dim 的定义来看，如果你是单变量预测，那么在准备 raw dataset 的时候，你就需要把需要预测的这个变量放在最后一列。
 
                 pred = outputs
                 true = batch_y
@@ -239,8 +239,8 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     if test_data.scale and self.args.inverse:
                         shape = input.shape
                         input = test_data.inverse_transform(input.reshape(shape[0] * shape[1], -1)).reshape(shape)
-                    gt = np.concatenate((input[0, :, -1], true[0, :, -1]), axis=0)
-                    pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)
+                    gt = np.concatenate((input[0, :, -1], true[0, :, -1]), axis=0)  # 这里画的是最后一列的真实值
+                    pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)  # 
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
 
         preds = np.concatenate(preds, axis=0)

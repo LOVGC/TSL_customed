@@ -133,7 +133,7 @@ class Model(nn.Module):
         x_enc = x_enc.div(stdev) # (B, T, C)
 
         # embedding： projecting a number to a N-channel vector
-        enc_out = self.enc_embedding(x_enc, x_mark_enc)  # [B,T,N]， N is d_model
+        enc_out = self.enc_embedding(x_enc, x_mark_enc)  # [B,T,N]， N is d_model，x_mark_enc 可以是 None
         enc_out = self.predict_linear(enc_out.permute(0, 2, 1)).permute(
             0, 2, 1)  # align temporal dimension [B,pred_len+seq_len,N], 这里必须对 nn.Linear 有深刻的理解：nn.Linear 是对最后一个维度做变换的。
         
