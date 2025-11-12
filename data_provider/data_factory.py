@@ -1,5 +1,7 @@
 from data_provider.data_loader import Dataset_ETT_hour
 from data_provider.uea import collate_fn
+from data_provider.berkely_sensor_data import collate_fn_for_None_type
+
 from torch.utils.data import DataLoader
 
 data_dict = {
@@ -71,7 +73,8 @@ def data_provider(args, flag):
             batch_size=batch_size,
             shuffle=shuffle_flag,
             num_workers=args.num_workers,
-            drop_last=drop_last)
+            drop_last=drop_last,
+            collate_fn=collate_fn_for_None_type) # 使用自定义的 collate_fn 来处理包含 None 的情况
         return data_set, data_loader
     
 

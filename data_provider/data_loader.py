@@ -389,7 +389,7 @@ class Dataset_Berkley_sensor(Dataset):
         '''
         cols = list(df_raw.columns)
         cols.remove(self.target)
-        cols.remove('date')  # cols 就是 (other features),i.e. 除了 ‘date’ 和 target feature
+        cols.remove('date')  # cols 就是 (other features),i.e. 除了 ‘date’ 和 target feature 之外的所有 feature
         df_raw = df_raw[['date'] + cols + [self.target]] # 懂了，这个操作其实就是把 target feature 放到最后一列而已.
         num_train = int(len(df_raw) * 0.7)
         num_test = int(len(df_raw) * 0.2)
@@ -412,6 +412,7 @@ class Dataset_Berkley_sensor(Dataset):
         else:
             data = df_data.values
 
+        # 不需要时间戳
         # df_stamp = df_raw[['date']][border1:border2]
         # df_stamp['date'] = pd.to_datetime(df_stamp.date)
         # if self.timeenc == 0:
@@ -430,6 +431,10 @@ class Dataset_Berkley_sensor(Dataset):
         if self.set_type == 0 and self.args.augmentation_ratio > 0:
             self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
 
+        # 变成 tensor
+
+        self.data_x = torch.tensor(self.data_x, dtype=torch.float32)
+        self.data_y = torch.tensor(self.data_y, dtype=torch.float32)
         # self.data_stamp = data_stamp
 
     def __getitem__(self, index):
@@ -440,10 +445,10 @@ class Dataset_Berkley_sensor(Dataset):
 
         seq_x = self.data_x[s_begin:s_end]
         seq_y = self.data_y[r_begin:r_end]
-        seq_x_mark = 0 # 不需要 mark
-        seq_y_mark = 0 # 不需要 mark
+        # seq_x_mark = self.data_stamp[s_begin:s_end]
+        # seq_y_mark = self.data_stamp[r_begin:r_end]
 
-        return seq_x, seq_y, seq_x_mark, seq_y_mark  # 这里 seq_x_mark=None 会如何？
+        return seq_x, seq_y
 
     def __len__(self):
         return len(self.data_x) - self.seq_len - self.pred_len + 1
