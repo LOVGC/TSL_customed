@@ -52,7 +52,7 @@ def data_provider(args, flag):
             collate_fn=lambda x: collate_fn(x, max_len=args.seq_len)
         )
         return data_set, data_loader
-    else:
+    else:  # Berkely Sensor Data, for single variable predicts single variable, 这里的 collate_fn 是自己写的，会降低训练速度。没有 default 的快。
         if args.data == 'm4':
             drop_last = False
         data_set = Data(
