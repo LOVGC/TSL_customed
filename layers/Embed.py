@@ -153,7 +153,7 @@ class DataEmbedding(nn.Module):
         else:
             x = self.value_embedding(
                 x) + self.temporal_embedding(x_mark) + self.position_embedding(x)
-        return self.dropout(x)
+        return self.dropout(x) # data embedding 这里用 dropout 很奇怪啊。
 
 
 class DataEmbedding_inverted(nn.Module):

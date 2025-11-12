@@ -50,7 +50,7 @@ class Dataset_ETT_hour(Dataset):
 
         self.root_path = root_path
         self.data_path = data_path
-        self.__read_data__()
+        self.__read_data__() # 把 file 中的数据给读进来，并做了 mean/std 归一化等预处理工作. 存在 self.data_x, self.data_y, self.data_stamp 中.
 
     def __read_data__(self):
         '''
@@ -80,7 +80,7 @@ class Dataset_ETT_hour(Dataset):
         if self.scale:
             train_data = df_data[border1s[0]:border2s[0]]  # shape (N_train, num_features)
             #train_data.values: turn pandas DataFrame into 2D numpy
-            self.scaler.fit(train_data.values) 
+            self.scaler.fit(train_data.values)  # 用 train data 来算 mean 和 std
             data = self.scaler.transform(df_data.values) # 0-1 normalization along dim=0
         else:
             data = df_data.values
