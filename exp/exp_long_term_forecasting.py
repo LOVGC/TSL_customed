@@ -131,7 +131,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:  #in the case of TimesNet, use_amp should be False
                     with torch.cuda.amp.autocast():
-                        outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                        outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark) # batch_x_mark 可以是 None
 
                         f_dim = -1 if self.args.features == 'MS' else 0
                         outputs = outputs[:, -self.args.pred_len:, f_dim:]
