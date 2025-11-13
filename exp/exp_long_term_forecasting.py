@@ -70,7 +70,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 loss = criterion(pred, true)
 
                 total_loss.append(loss.item())
-        total_loss = np.average(total_loss)
+        total_loss = np.average(total_loss) # 最后 return 的这个 total_loss 是平均每一个 sample 的 MSE loss, 平均在整个 validation set 上。
         self.model.train()
         return total_loss
 

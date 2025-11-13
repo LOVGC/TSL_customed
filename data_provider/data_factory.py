@@ -1,4 +1,4 @@
-from data_provider.data_loader import Dataset_ETT_hour,Dataset_Berkley_sensor
+from data_provider.data_loader import Dataset_ETT_hour,Dataset_Berkley_sensor,Dataset_Simulate_ar
 from data_provider.uea import collate_fn
 from data_provider.berkely_sensor_data import collate_fn_for_None_type
 
@@ -8,6 +8,7 @@ data_dict = {
     'ETTh1': Dataset_ETT_hour,
     'ETTh2': Dataset_ETT_hour,
     'moiteid_3_temp_volt': Dataset_Berkley_sensor,
+    'simulate_ar': Dataset_Simulate_ar,
 }
 
 

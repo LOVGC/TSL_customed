@@ -203,7 +203,7 @@ if __name__ == '__main__':
             exp.train(setting) # 主要的代码都在这里
 
             print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
-            exp.test(setting)
+            exp.test(setting)  # train 完直接就做了一个 test!
             if args.gpu_type == 'mps':
                 torch.backends.mps.empty_cache()
             elif args.gpu_type == 'cuda':

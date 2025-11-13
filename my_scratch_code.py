@@ -1,30 +1,23 @@
-import pandas as pd
-import matplotlib.pyplot as plt
+import torch
+import torch.nn as nn
 
-# 1. 读取 CSV 文件
-file_path = r"dataset\ETT-small\ETTh1.csv"
-data = pd.read_csv(file_path)
+# 创建 MSELoss 实例
+mse_loss_none = nn.MSELoss(reduction='none')
+mse_loss_sum = nn.MSELoss(reduction='sum')
+mse_loss_mean = nn.MSELoss(reduction='mean')
 
-# 2. 打印所有可选的列名
-print("Available columns:", list(data.columns))
+# 模拟真实值和预测值
+y_true = torch.tensor([1.0, 2.0, 3.0])  # 真实值
+y_pred = torch.tensor([1.5, 2.5, 2.8])  # 预测值
 
-# 3. 用户输入想要绘制的列名
-column_name = input("请输入要绘制的列名（例如 OT）: ").strip()
+# 使用 reduction='none'
+loss_none = mse_loss_none(y_pred, y_true)
+print(f"Loss for each sample (reduction='none'): {loss_none}")
 
-# 4. 检查列名是否存在
-if column_name not in data.columns:
-    print(f"❌ 列名 '{column_name}' 不存在，请重新运行程序并输入正确的列名。")
-else:
-    # 5. 提取数据并绘图
-    date = pd.to_datetime(data['date'])
-    values = data[column_name]
+# 使用 reduction='sum'
+loss_sum = mse_loss_sum(y_pred, y_true)
+print(f"Sum of losses (reduction='sum'): {loss_sum.item()}")
 
-    plt.figure(figsize=(12, 5))
-    plt.plot(date, values, label=column_name, color='b')
-    plt.xlabel('Date')
-    plt.ylabel(column_name)
-    plt.title(f'{column_name} over Time (ETTh1)')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
+# 使用 reduction='mean'
+loss_mean = mse_loss_mean(y_pred, y_true)
+print(f"Mean of losses (reduction='mean'): {loss_mean.item()}")
