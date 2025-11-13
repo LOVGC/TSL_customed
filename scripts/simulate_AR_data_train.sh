@@ -29,8 +29,8 @@ python -u run.py \
   --features S \
   --target AR_Value \
   --seq_len 96 \
-  --label_len 48 \
-  --pred_len 96 \
+  --label_len 0 \
+  --pred_len 24 \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
