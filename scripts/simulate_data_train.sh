@@ -20,16 +20,16 @@ model_name=TimesNet
 
 python -u run.py \
   --task_name long_term_forecast \
-  --is_training 0 \
-  --root_path ./dataset/simulate_data/ \
-  --data_path ar_data.csv \
-  --model_id ar_data_96_96 \
+  --is_training 1 \
+  --root_path ./dataset/simulated_data/ \
+  --data_path simulated_data_multi_sine.csv \
+  --model_id multi_sine_data_192_96 \
   --model $model_name \
   --data simulate_ar \
   --features S \
-  --target AR_Value \
-  --seq_len 96 \
-  --label_len 48 \
+  --target data \
+  --seq_len 192 \
+  --label_len 0 \
   --pred_len 96 \
   --e_layers 2 \
   --d_layers 1 \

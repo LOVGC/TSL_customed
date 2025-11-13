@@ -37,5 +37,5 @@ Here are some example commands for your reference:
 *   To run a script (e.g., `main.py`): `uv run python main.py`
 
 
-## when create new code 
-* save newly created code @GEMINI_code
+## 记住：当你需要写代码的时候，把代码存在 ./GEMINI_code 里面
+
