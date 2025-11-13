@@ -407,7 +407,7 @@ class Dataset_Berkley_sensor(Dataset):
 
         if self.scale:
             train_data = df_data[border1s[0]:border2s[0]]
-            self.scaler.fit(train_data.values)
+            self.scaler.fit(train_data.values)  # scale 用的是 train data 的 mean 和 std
             data = self.scaler.transform(df_data.values)
         else:
             data = df_data.values
@@ -448,7 +448,7 @@ class Dataset_Berkley_sensor(Dataset):
         # seq_x_mark = self.data_stamp[s_begin:s_end]
         # seq_y_mark = self.data_stamp[r_begin:r_end]
 
-        return seq_x, seq_y
+        return seq_x, seq_y, None, None
 
     def __len__(self):
         return len(self.data_x) - self.seq_len - self.pred_len + 1

@@ -121,8 +121,10 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 # _mark holds information about time-related features. Specifically, it is a 
                 # tensor that encodes temporal information and is associated with the 
                 # input data batch_x.
-                batch_x_mark = batch_x_mark.float().to(self.device)
-                batch_y_mark = batch_y_mark.float().to(self.device)
+
+                if batch_x_mark is not None and batch_y_mark is not None:
+                    batch_x_mark = batch_x_mark.float().to(self.device)
+                    batch_y_mark = batch_y_mark.float().to(self.device)
 
                 # decoder input(didn't use in TimesNet case)
                 dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
