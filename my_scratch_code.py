@@ -1,33 +1,30 @@
-import torch
-from torch.utils.data import Dataset, DataLoader
+import pandas as pd
+import matplotlib.pyplot as plt
 
-class MyDataset(Dataset):
-    def __getitem__(self, idx):
-        a = torch.tensor([idx])             # 任意 tensor
-        b = torch.tensor([idx * 10])        # 任意 tensor
-        return a, None, b                   # 注意这里有 None
+# 1. 读取 CSV 文件
+file_path = r"dataset\ETT-small\ETTh1.csv"
+data = pd.read_csv(file_path)
 
-    def __len__(self):
-        return 6
+# 2. 打印所有可选的列名
+print("Available columns:", list(data.columns))
 
-def my_collate_fn(batch):
-    # batch 是一个 list，每个元素是 (a, b, None)
-    # 例如：[(a1, b1, None), (a2, b2, None), ...]
+# 3. 用户输入想要绘制的列名
+column_name = input("请输入要绘制的列名（例如 OT）: ").strip()
 
-    transposed = list(zip(*batch))  # [(a1,a2,...), (b1,b2,...), (None,None,...)]
-    collated = []
+# 4. 检查列名是否存在
+if column_name not in data.columns:
+    print(f"❌ 列名 '{column_name}' 不存在，请重新运行程序并输入正确的列名。")
+else:
+    # 5. 提取数据并绘图
+    date = pd.to_datetime(data['date'])
+    values = data[column_name]
 
-    for items in transposed:
-        # 如果该列全是 None，就保持 None
-        if all(x is None for x in items):
-            collated.append(None)
-        # 否则用默认方式堆叠
-        else:
-            collated.append(torch.stack(items, dim=0))
-    return tuple(collated)
-
-dataset = MyDataset()
-loader = DataLoader(dataset, batch_size=2, shuffle=False, collate_fn=my_collate_fn)
-
-for a, b, c in loader:
-    print(a, b, c)
+    plt.figure(figsize=(12, 5))
+    plt.plot(date, values, label=column_name, color='b')
+    plt.xlabel('Date')
+    plt.ylabel(column_name)
+    plt.title(f'{column_name} over Time (ETTh1)')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
