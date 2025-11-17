@@ -211,16 +211,22 @@ class Model(nn.Module):
         enc_out = self.enc_embedding(x_enc, None)  # [B,T,C]
         # TimesNet
         for i in range(self.layer):
-            enc_out = self.layer_norm(self.model[i](enc_out))
+            enc_out = self.layer_norm(self.model[i](enc_out)) # (B, seq_len, N = d_model)
 
         # Output
         # the output transformer encoder/decoder embeddings don't include non-linearity
-        output = self.act(enc_out)
-        output = self.dropout(output)
-        # zero-out padding embeddings
-        output = output * x_mark_enc.unsqueeze(-1)
-        # (batch_size, seq_length * d_model)
-        output = output.reshape(output.shape[0], -1)
+        output = self.act(enc_out)  # 这里 act() 就是 gelu, (B, seq_length, N=d_model)
+        output = self.dropout(output) # (B, seq_length, N=d_model)
+
+        # 这个是干嘛的？ 需要研究一下从这里往下的细节。
+
+        # zero-out padding embeddings:The primary role of x_mark_enc in the code is to 
+        # zero out the embeddings for padding positions in the output tensor through 
+        # element-wise multiplication, helping the model to focus on meaningful data 
+        # while disregarding padding. 这里 zero out 啥意思？
+        output = output * x_mark_enc.unsqueeze(-1) 
+        
+        output = output.reshape(output.shape[0], -1)  
         output = self.projection(output)  # (batch_size, num_classes)
         return output
 
