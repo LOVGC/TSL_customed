@@ -4,6 +4,16 @@ import pandas as pd
 import torch
 
 
+class UEA_Collate_Fn:
+    """
+    目的是为了多进程 load data, 只能把带参数的 collate_fn 给包到一个 class 里。
+    """
+    def __init__(self, max_len):
+        self.max_len = max_len
+    
+    def __call__(self, data):
+        return collate_fn(data, self.max_len)
+
 def collate_fn(data, max_len=None):
     """Build mini-batch tensors from a list of (X, mask) tuples. Mask input. Create
     Args:

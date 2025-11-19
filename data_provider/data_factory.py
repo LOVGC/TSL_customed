@@ -1,5 +1,5 @@
 from data_provider.data_loader import Dataset_ETT_hour,Dataset_Berkley_sensor,Dataset_Simulate_ar, UEAloader
-from data_provider.uea import collate_fn
+from data_provider.uea import UEA_Collate_Fn
 from data_provider.berkely_sensor_data import collate_fn_for_None_type
 
 from torch.utils.data import DataLoader
@@ -53,7 +53,7 @@ def data_provider(args, flag):
             shuffle=shuffle_flag,
             num_workers=args.num_workers,
             drop_last=drop_last,
-            collate_fn=lambda x: collate_fn(x, max_len=args.seq_len)
+            collate_fn=UEA_Collate_Fn(max_len=args.seq_len)
         )
         return data_set, data_loader
     else:  # Berkely Sensor Data, for single variable predicts single variable, 这里的 collate_fn 是自己写的，会降低训练速度。没有 default 的快。
