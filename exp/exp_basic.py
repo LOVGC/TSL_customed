@@ -5,6 +5,9 @@ from models import TimesNet
 
 class Exp_Basic(object):
     def __init__(self, args):
+        """
+        基本上干的事情就是，所有模型训练需要做的事情：把 model 给放在 device 上。
+        """
         self.args = args
         self.model_dict = {
             'TimesNet': TimesNet,

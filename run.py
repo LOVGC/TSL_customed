@@ -3,6 +3,7 @@ import os
 import torch
 import torch.backends
 from exp.exp_long_term_forecasting import Exp_Long_Term_Forecast
+from exp.exp_classification import Exp_Classification
 from utils.print_args import print_args
 import random
 import numpy as np

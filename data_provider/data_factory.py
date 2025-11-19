@@ -10,7 +10,7 @@ data_dict = {
     'moiteid_3_temp_volt': Dataset_Berkley_sensor,
     'simulate_ar': Dataset_Simulate_ar,
 
-    'UEA': UEAloader
+    'UEA': UEAloader   # classification task 的数据集全是用这个 UEAloader
 }
 
 
