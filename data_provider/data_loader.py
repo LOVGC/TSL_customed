@@ -615,7 +615,7 @@ class UEAloader(Dataset):
             all_df: a single (possibly concatenated) dataframe with all data corresponding to specified files
             labels_df: dataframe containing label(s) for each sample
         """
-        # Select paths for training and evaluation
+        # Select paths for training and evaluation, 基本上就是在找这个 .ts 文件的 file_path
         if file_list is None:
             data_paths = glob.glob(os.path.join(root_path, '*'))  # list of all paths
         else:
