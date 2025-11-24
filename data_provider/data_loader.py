@@ -602,7 +602,7 @@ class UEAloader(Dataset):
         # pre_process
         normalizer = Normalizer()
         self.feature_df = normalizer.normalize(self.feature_df)
-        print(len(self.all_IDs))
+        print(f"num samples ({self.flag}) is {len(self.all_IDs)}")
 
     def load_all(self, root_path, file_list=None, flag=None):
         """
@@ -615,7 +615,7 @@ class UEAloader(Dataset):
             all_df: a single (possibly concatenated) dataframe with all data corresponding to specified files
             labels_df: dataframe containing label(s) for each sample
         """
-        # Select paths for training and evaluation, 基本上就是在找这个 .ts 文件的 file_path
+        # Select paths for training and evaluation
         if file_list is None:
             data_paths = glob.glob(os.path.join(root_path, '*'))  # list of all paths
         else:
@@ -652,9 +652,9 @@ class UEAloader(Dataset):
         lengths = df.applymap(lambda x: len(x)).values
         vert_diffs = np.abs(lengths - np.expand_dims(lengths[0, :], 0))
         if np.sum(vert_diffs) > 0:  # if any column (dimension) has varying length across samples
-            self.max_seq_len = int(np.max(lengths[:, 0]))
+            self.max_seq_len = int(np.max(lengths[:, 0])) # 记录一下这个 dataset 最大的 seq len, 可能在某些 architecture 中需要用到这个 attribute
         else:
-            self.max_seq_len = lengths[0, 0]
+            self.max_seq_len = lengths[0, 0]  
 
         # First create a (seq_len, feat_dim) dataframe for each sample, indexed by a single integer ("ID" of the sample)
         # Then concatenate into a (num_samples * seq_len, feat_dim) dataframe, with multiple rows corresponding to the
@@ -680,8 +680,8 @@ class UEAloader(Dataset):
             return case
 
     def __getitem__(self, ind):
-        batch_x = self.feature_df.loc[self.all_IDs[ind]].values
-        labels = self.labels_df.loc[self.all_IDs[ind]].values
+        batch_x = self.feature_df.loc[self.all_IDs[ind]].values  # (seq_len, features), 这里叫 batch_x 但它其实只是一个 sample, 这里一个 sample 指的就是一个 sequence, 每一个 sequence 的点对应一个 vector
+        labels = self.labels_df.loc[self.all_IDs[ind]].values # (1,)
         if self.flag == "TRAIN" and self.args.augmentation_ratio > 0:
             num_samples = len(self.all_IDs)
             num_columns = self.feature_df.shape[1]
