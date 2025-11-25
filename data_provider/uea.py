@@ -24,7 +24,7 @@ def collate_fn(data, max_len=None):
         max_len: global fixed sequence length. Used for architectures requiring fixed length input,
             where the batch length cannot vary dynamically. Longer sequences are clipped, shorter are padded with 0s
     Returns:
-        X: (batch_size, padded_length, feat_dim) torch tensor of masked features (input)
+        X: (batch_size, padded_length, feat_dim) torch tensor of masked features (input) 
         targets: (batch_size, padded_length, feat_dim) torch tensor of unmasked features (output)
         target_masks: (batch_size, padded_length, feat_dim) boolean torch tensor
             0 indicates masked values to be predicted, 1 indicates unaffected/"active" feature values
@@ -32,7 +32,14 @@ def collate_fn(data, max_len=None):
     """
 
     batch_size = len(data)
-    features, labels = zip(*data)
+
+    # *data 是 Python 中的解包操作，它将 data 中的每个元组解开。例如，data = [(X1, y1), (X2, y2), (X3, y3)] 经过解包后就变成了 (X1, X2, X3) 和 (y1, y2, y3) 两个元组。
+    # zip(*data) 的作用是将这些解包后的部分合并成两个元组：一个是所有特征 X 的元组，另一个是所有标签 y 的元组。 这里 unpack 其实就是传参时候的 unpack
+    # 例如，zip(*data) 会返回：
+    #   features 是 (X1, X2, X3)
+    #   labels 是 (y1, y2, y3)
+    # 这其实是 zip 的基本操作
+    features, labels = zip(*data) 
 
     # Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
     lengths = [X.shape[0] for X in features]  # original sequence length for each time series

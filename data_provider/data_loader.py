@@ -670,6 +670,9 @@ class UEAloader(Dataset):
         return df, labels_df
 
     def instance_norm(self, case):
+        '''
+        结合具体输入，看看这个是干嘛的
+        '''
         if self.root_path.count('EthanolConcentration') > 0:  # special process for numerical stability
             mean = case.mean(0, keepdim=True)
             case = case - mean
@@ -681,7 +684,7 @@ class UEAloader(Dataset):
 
     def __getitem__(self, ind):
         batch_x = self.feature_df.loc[self.all_IDs[ind]].values  # (seq_len, features), 这里叫 batch_x 但它其实只是一个 sample, 这里一个 sample 指的就是一个 sequence, 每一个 sequence 的点对应一个 vector
-        labels = self.labels_df.loc[self.all_IDs[ind]].values # (1,)
+        labels = self.labels_df.loc[self.all_IDs[ind]].values # (1,) 这个 sample 对应的 label
         if self.flag == "TRAIN" and self.args.augmentation_ratio > 0:
             num_samples = len(self.all_IDs)
             num_columns = self.feature_df.shape[1]
@@ -691,6 +694,7 @@ class UEAloader(Dataset):
 
             batch_x = batch_x.reshape((1 * seq_len, num_columns))
 
+        # 这里的 instance_norm 只用在了 ethanolConcentration 的 dataset 上
         return self.instance_norm(torch.from_numpy(batch_x)), \
                torch.from_numpy(labels)
 

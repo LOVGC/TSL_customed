@@ -79,7 +79,7 @@ class Exp_Classification(Exp_Basic):
     def train(self, setting):
         train_data, train_loader = self._get_data(flag='TRAIN')
         vali_data, vali_loader = self._get_data(flag='TEST')
-        test_data, test_loader = self._get_data(flag='TEST')
+        test_data, test_loader = self._get_data(flag='TEST') # 这里 valid and test data 是一个数据集？
 
         path = os.path.join(self.args.checkpoints, setting)
         if not os.path.exists(path):
