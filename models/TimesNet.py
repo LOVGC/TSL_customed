@@ -224,7 +224,7 @@ class Model(nn.Module):
         # zero out the embeddings for padding positions in the output tensor through 
         # element-wise multiplication, helping the model to focus on meaningful data 
         # while disregarding padding. 这里 zero out 啥意思？
-        output = output * x_mark_enc.unsqueeze(-1) 
+        output = output * x_mark_enc.unsqueeze(-1) # 这里 x_mark_enc 是 padding_mask, with shape (B, seq_len)
         
         output = output.reshape(output.shape[0], -1)  
         output = self.projection(output)  # (batch_size, num_classes)
@@ -242,6 +242,6 @@ class Model(nn.Module):
             dec_out = self.anomaly_detection(x_enc)
             return dec_out  # [B, L, D]
         if self.task_name == 'classification':
-            dec_out = self.classification(x_enc, x_mark_enc)
+            dec_out = self.classification(x_enc, x_mark_enc) # 这里的 x_mark_enc 就是这个 batch 的 padding_mask with shape (B, padded_len)
             return dec_out  # [B, N]
         return None

@@ -48,7 +48,8 @@ if __name__ == '__main__':
     # anomaly detection task
     parser.add_argument('--anomaly_ratio', type=float, default=0.25, help='prior anomaly ratio (%%)')
 
-    # model define
+    # model define, 一下参数不是每一个参数都用到的。因为不同任务，模型架构会不一样，对于一个任务，比如 classification, 
+    # 下面的参数只有一个 sub-set 会被用到。这里代码作者是把所有东西都赛到这里，方便管理而已。
     parser.add_argument('--expand', type=int, default=2, help='expansion factor for Mamba')
     parser.add_argument('--d_conv', type=int, default=4, help='conv kernel size for Mamba')
     parser.add_argument('--top_k', type=int, default=5, help='for TimesBlock')

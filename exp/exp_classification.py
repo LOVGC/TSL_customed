@@ -18,7 +18,7 @@ class Exp_Classification(Exp_Basic):
         super(Exp_Classification, self).__init__(args)
 
     def _build_model(self):
-        # model input depends on data
+        # model input depends on data, 这里只是想获得 data 里面的一些参数
         train_data, train_loader = self._get_data(flag='TRAIN')
         test_data, test_loader = self._get_data(flag='TEST')
         self.args.seq_len = max(train_data.max_seq_len, test_data.max_seq_len)
@@ -104,9 +104,9 @@ class Exp_Classification(Exp_Basic):
                 iter_count += 1
                 model_optim.zero_grad()
 
-                batch_x = batch_x.float().to(self.device)
-                padding_mask = padding_mask.float().to(self.device)
-                label = label.to(self.device)
+                batch_x = batch_x.float().to(self.device) # (B, padded_seq_len, features)
+                padding_mask = padding_mask.float().to(self.device) # (B, padded_seq_len)
+                label = label.to(self.device) # (B, 1), 这个对于分类问题也很合理
 
                 outputs = self.model(batch_x, padding_mask, None, None)
                 loss = criterion(outputs, label.long().squeeze(-1))

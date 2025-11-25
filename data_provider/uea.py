@@ -44,14 +44,14 @@ def collate_fn(data, max_len=None):
     # Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
     lengths = [X.shape[0] for X in features]  # original sequence length for each time series
     if max_len is None:
-        max_len = max(lengths)
+        max_len = max(lengths)  # 就是用这个 batch 中最长的那个序列的长度来做 max_len
 
-    X = torch.zeros(batch_size, max_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim)
+    X = torch.zeros(batch_size, max_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim), from the list of samples, i.e. data, 构建 batched data
     for i in range(batch_size):
-        end = min(lengths[i], max_len)
+        end = min(lengths[i], max_len) # 这个操作是因为，有可能一个 sample 的长度会大于这个 max_len, 这样的话，就是 truncate
         X[i, :end, :] = features[i][:end, :]
 
-    targets = torch.stack(labels, dim=0)  # (batch_size, num_labels)
+    targets = torch.stack(labels, dim=0)  # (batch_size, num_labels), 构建 batched targets 的 tensor
 
     padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
                                  max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
@@ -63,6 +63,7 @@ def padding_mask(lengths, max_len=None):
     """
     Used to mask padded positions: creates a (batch_size, max_len) boolean mask from a tensor of sequence lengths,
     where 1 means keep element at this position (time step)
+    这个代码看起来还是挺复杂的，但是概念上干的事情就是，标记输入序列中，哪些 seq points (time steps) 是有用的，哪些是需要 mask 的。
     """
     batch_size = lengths.numel()
     max_len = max_len or lengths.max_val()  # trick works because of overloading of 'or' operator for non-boolean types
