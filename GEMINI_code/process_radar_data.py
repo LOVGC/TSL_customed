@@ -44,12 +44,12 @@ def process_radar_data(base_path="dataset/real_doppler_RAD_DAR_database"):
                         # Reshape to (seq_len, features) which is (61, 11)
                         reshaped_data = matrix_data.T
                         
-                        # One-hot encode the label
-                        one_hot_target = np.zeros(len(class_labels), dtype=np.int32)
-                        one_hot_target[label] = 1
+                        # target 就是 label, i.e. {0, 1, 2}
+                        
+                        target = label
 
                         all_input_data.append(reshaped_data)
-                        all_targets.append(one_hot_target)
+                        all_targets.append(target)
                     except Exception as e:
                         print(f"Error processing {file_name}: {e}")
     
