@@ -49,7 +49,8 @@ def data_provider(args, flag):
                 batch_size=batch_size,
                 shuffle=shuffle_flag,
                 num_workers=args.num_workers,
-                drop_last=False)
+                drop_last=False,
+                collate_fn=UEA_Collate_Fn(max_len=None))
             return data_set, data_loader
         else:
             data_set = Data(

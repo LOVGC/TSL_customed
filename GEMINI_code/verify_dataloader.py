@@ -39,10 +39,11 @@ def verify_real_doppler_kaggle_dataloader():
 
 
     # 4. Print shapes and samples
-    batch_x, batch_y = first_batch
+    batch_x, batch_y, paddiing_masks = first_batch
     print(f"Successfully loaded a batch from the 'train' data_loader.")
     print(f"Shape of the input data (batch_x): {batch_x.shape}")
     print(f"Shape of the targets (batch_y): {batch_y.shape}")
+    print(f"Shape of the targets (paddiing_masks): {paddiing_masks.shape}")
     
     print("\n--- Sample Data ---")
     print("Input data sample (first sample in batch, first 5 timesteps):")

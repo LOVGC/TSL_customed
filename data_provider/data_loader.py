@@ -720,6 +720,11 @@ class Dataset_Real_Doppler_Kaggle(Dataset):
         targets_file = os.path.join(data_dir, f'targets_{self.flag}.npy')
         self.targets = np.load(targets_file)
 
+        # convert to tensor
+        self.input_data = torch.from_numpy(self.input_data)
+        self.targets = torch.from_numpy(self.targets)
+
+
     def __getitem__(self, index):
         # Return input data sample and its corresponding target sample
         return self.input_data[index], self.targets[index]

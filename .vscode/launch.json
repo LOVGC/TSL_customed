@@ -13,7 +13,13 @@
             "console": "integratedTerminal",
         },
 
-
+        {
+            "name": "Python: debug a module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "GEMINI_code.verify_dataloader",  // 这里需要自己修改这个 module path 
+            "console": "integratedTerminal"
+        },
 
         {
             "name": "Python: train TimesNet Long-Term Forecast (Learning)",
