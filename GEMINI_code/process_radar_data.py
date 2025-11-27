@@ -26,6 +26,7 @@ def process_radar_data(base_path="dataset/real_doppler_RAD_DAR_database"):
             continue
 
         for root, _, files in os.walk(class_folder):
+            print(f"processing {root}")
             for file_name in files:
                 if file_name.endswith(".csv"):
                     file_path = os.path.join(root, file_name)
@@ -65,8 +66,8 @@ def process_radar_data(base_path="dataset/real_doppler_RAD_DAR_database"):
     np.save(os.path.join(processed_data_path, "targets.npy"), targets_array)
 
     print(f"Processed {len(all_input_data)} samples.")
-    print(f"Input data shape: {input_data_array.shape}")
-    print(f"Targets data shape: {targets_array.shape}")
+    print(f"Input data shape: {input_data_array.shape}")  # (N, seq_len, features)
+    print(f"Targets data shape: {targets_array.shape}")   # (N, 3), here, we use one-hot encoding for classes
     print(f"Processed data saved to {processed_data_path}")
 
 if __name__ == "__main__":
