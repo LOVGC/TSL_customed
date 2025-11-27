@@ -704,38 +704,108 @@ class UEAloader(Dataset):
 
 
 class Dataset_Real_Doppler_Kaggle(Dataset):
-    def __init__(self, flag):
+    def __init__(self, flag, args=None, root_path=None):
         assert flag in ['TRAIN', 'TEST', 'VAL'], "Flag must be 'TRAIN', 'VAL', or 'TEST'."
         self.flag = flag
+        
+        self.base_path = os.path.join('dataset', 'real_doppler_RAD_DAR_database')
+        self.processed_data_path = os.path.join(self.base_path, 'processed')
+        
+        if not os.path.exists(self.processed_data_path):
+            print("Processed data directory not found. Running full data preparation pipeline...")
+            self._process_raw_data()
+            self._split_data()
+
         self.__read_data__()
 
+        # Compatibility attributes for Exp_Classification
+        self.max_seq_len = self.input_data.shape[1]
+        self.class_names = ['Cars', 'Drones', 'People']
+        self.feature_df = np.ones((1, self.input_data.shape[2]))
+
+    def _process_raw_data(self):
+        """Processes raw CSV data from `raw` folder into numpy arrays."""
+        print("Processing raw data from CSVs...")
+        raw_data_path = os.path.join(self.base_path, "raw")
+        os.makedirs(self.processed_data_path, exist_ok=True)
+
+        class_labels = {"Cars": 0, "Drones": 1, "People": 2}
+        all_input_data = []
+        all_targets = []
+
+        for class_name, label in class_labels.items():
+            class_folder = os.path.join(raw_data_path, class_name)
+            if not os.path.exists(class_folder):
+                print(f"Warning: Raw data folder for class '{class_name}' not found at '{class_folder}'. Skipping.")
+                continue
+
+            for root, _, files in os.walk(class_folder):
+                for file_name in filter(lambda f: f.endswith(".csv"), files):
+                    file_path = os.path.join(root, file_name)
+                    try:
+                        df = pd.read_csv(file_path, header=None)
+                        matrix_data = df.to_numpy(dtype=np.float32)
+                        if matrix_data.shape == (11, 61):
+                            reshaped_data = matrix_data.T
+                            all_input_data.append(reshaped_data)
+                            all_targets.append(label)
+                    except Exception as e:
+                        print(f"Error processing {file_name}: {e}")
+        
+        if not all_input_data:
+            raise RuntimeError(f"No raw data was processed. Check the directory: {raw_data_path}")
+
+        input_data_array = np.array(all_input_data)
+        targets_array = np.array(all_targets, dtype=np.int64)
+
+        np.save(os.path.join(self.processed_data_path, "input_data.npy"), input_data_array)
+        np.save(os.path.join(self.processed_data_path, "targets.npy"), targets_array)
+
+        print(f"Finished processing raw data. Saved {len(all_input_data)} samples.")
+
+    def _split_data(self):
+        """Splits the processed numpy arrays into TRAIN, VAL, and TEST sets."""
+        print("Splitting data into TRAIN, VAL, and TEST sets...")
+        try:
+            input_data = np.load(os.path.join(self.processed_data_path, 'input_data.npy'))
+            targets = np.load(os.path.join(self.processed_data_path, 'targets.npy'))
+        except FileNotFoundError:
+            raise RuntimeError("Base 'input_data.npy' or 'targets.npy' not found for splitting.")
+
+        n_samples = input_data.shape[0]
+        indices = np.arange(n_samples)
+        np.random.seed(42)
+        np.random.shuffle(indices)
+
+        shuffled_input = input_data[indices]
+        shuffled_targets = targets[indices]
+
+        train_ratio, val_ratio = 0.6, 0.2
+        train_end = int(n_samples * train_ratio)
+        val_end = int(n_samples * (train_ratio + val_ratio))
+
+        sets = {
+            'TRAIN': (shuffled_input[:train_end], shuffled_targets[:train_end]),
+            'VAL': (shuffled_input[train_end:val_end], shuffled_targets[train_end:val_end]),
+            'TEST': (shuffled_input[val_end:], shuffled_targets[val_end:])
+        }
+
+        for flag, (data, labels) in sets.items():
+            np.save(os.path.join(self.processed_data_path, f'input_data_{flag}.npy'), data)
+            np.save(os.path.join(self.processed_data_path, f'targets_{flag}.npy'), labels)
+        
+        print("Data splitting complete.")
+
     def __read_data__(self):
-        data_dir = os.path.join('dataset', 'real_doppler_RAD_DAR_database', 'processed')
+        """Loads the specific data split based on the self.flag."""
+        input_file = os.path.join(self.processed_data_path, f'input_data_{self.flag}.npy')
+        targets_file = os.path.join(self.processed_data_path, f'targets_{self.flag}.npy')
         
-        # Load input data
-        input_file = os.path.join(data_dir, f'input_data_{self.flag}.npy')
-        self.input_data = np.load(input_file)
-
-        # Load targets (labels)
-        targets_file = os.path.join(data_dir, f'targets_{self.flag}.npy')
-        self.targets = np.load(targets_file)
-
-        # convert to tensor
-        self.input_data = torch.from_numpy(self.input_data)
-        self.targets = torch.from_numpy(self.targets)
-        
-        # 以下参数 are used by model construction, 主要是为了 stick to class Exp_Classification() 这个 API. 
-        # i.e. 尽量不去修改 class Exp_Classification() 这个 class 中的模型构建,以及训练代码.
-        self.max_seq_len = self.input_data.shape[1]  # 这里因为是这个数据集的所有 sequence 都是一样长度。如果不是一样长度,还要再改
-        self.class_names = ['Cars', 'Drones', 'People'] # Cars:0 Drones:1 People:2
-        self.feature_df = np.ones((1, self.input_data.shape[2])) # 这里仅仅是为了 stick to class Exp_Classification() 中 def _build_model(self)
-
-
+        self.input_data = torch.from_numpy(np.load(input_file)).float()
+        self.targets = torch.from_numpy(np.load(targets_file)).long()
 
     def __getitem__(self, index):
-        # Return input data sample and its corresponding target sample
         return self.input_data[index], self.targets[index]
 
     def __len__(self):
-        # Return the total number of samples in the dataset
-        return self.input_data.shape[0]
+        return len(self.input_data)

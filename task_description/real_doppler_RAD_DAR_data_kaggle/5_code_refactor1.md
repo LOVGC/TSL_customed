@@ -1,0 +1,3 @@
+之前你做的任务有 task_description\real_doppler_RAD_DAR_data_kaggle\1_data_split_task.md，task_description\real_doppler_RAD_DAR_data_kaggle\2_Dataset_task.md，task_description\real_doppler_RAD_DAR_data_kaggle\3_dataloader_task.md
+
+然后对应的代码在 GEMINI_code\process_radar_data.py， GEMINI_code\split_data.py， 现在，我想让你把这两个代码给 refactor 成 helper functions, 放在 data_provider\data_loader.py 中的 class Dataset_Real_Doppler_Kaggle(Dataset) 里面。不要修改 data_provider\data_loader.py 中除 class Dataset_Real_Doppler_Kaggle(Dataset) 外的其他代码。确保 implementation 是正确的，i.e. refactor 后的代码的功能和之前是一样的。
