@@ -1,0 +1,1 @@
+在这个任务中 task_description\real_doppler_RAD_DAR_data_kaggle\2_Dataset_task.md，你已经在 data_provider\data_loader.py 这个地方 implement 好了 class Dataset_Real_Doppler_Kaggle, 接下来，你需要在 data_provider\data_factory.py 中加入这个 Dataset_Real_Doppler_Kaggle，请先理解好 data_provider\data_factory.py 这个代码，然后在合适的地方加 Dataset_Real_Doppler_Kaggle 这个 dataset.
