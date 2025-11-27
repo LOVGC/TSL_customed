@@ -195,5 +195,34 @@
                 "--patience", "10"
             ],
         },
+
+        {
+            "name": "Python: real doppler RAD-DAR database with TimesNet",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"
+            },
+            "args": [
+                "--task_name", "classification",
+                "--is_training", "1",
+                "--root_path", "",
+                "--model_id", "real_doppler_RAD_DAR",
+                "--model", "TimesNet",
+                "--data", "real_doppler_kaggle",
+                "--e_layers", "3",
+                "--batch_size", "16",
+                "--d_model", "16",
+                "--d_ff", "32",
+                "--top_k", "1",
+                "--des", "Exp",
+                "--itr", "1",
+                "--learning_rate", "0.001",
+                "--train_epochs", "30",
+                "--patience", "10"
+            ],
+        },
     ]
 }

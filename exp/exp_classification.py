@@ -23,7 +23,8 @@ class Exp_Classification(Exp_Basic):
         test_data, test_loader = self._get_data(flag='TEST')
         self.args.seq_len = max(train_data.max_seq_len, test_data.max_seq_len)
         self.args.pred_len = 0
-        self.args.enc_in = train_data.feature_df.shape[1]
+        self.args.enc_in = train_data.feature_df.shape[1] # 就是 feature size
+        # self.args.enc_in = train_data.input_data.shape[2] # 就是 feature size
         self.args.num_class = len(train_data.class_names)
         # model init
         model = self.model_dict[self.args.model].Model(self.args).float()
@@ -78,8 +79,8 @@ class Exp_Classification(Exp_Basic):
 
     def train(self, setting):
         train_data, train_loader = self._get_data(flag='TRAIN')
-        vali_data, vali_loader = self._get_data(flag='TEST')
-        test_data, test_loader = self._get_data(flag='TEST') # 这里 valid and test data 是一个数据集？
+        vali_data, vali_loader = self._get_data(flag='VAL') # 这里要改成 VAL, paper 中用的数据集可能样本太小, 所以, vali_data 和 test_data 用的一个数据集
+        test_data, test_loader = self._get_data(flag='TEST') 
 
         path = os.path.join(self.args.checkpoints, setting)
         if not os.path.exists(path):

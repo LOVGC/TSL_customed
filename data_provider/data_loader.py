@@ -705,7 +705,7 @@ class UEAloader(Dataset):
 
 class Dataset_Real_Doppler_Kaggle(Dataset):
     def __init__(self, flag):
-        assert flag in ['train', 'test', 'val'], "Flag must be 'train', 'val', or 'test'."
+        assert flag in ['TRAIN', 'TEST', 'VAL'], "Flag must be 'train', 'val', or 'test'."
         self.flag = flag
         self.__read_data__()
 
@@ -723,6 +723,13 @@ class Dataset_Real_Doppler_Kaggle(Dataset):
         # convert to tensor
         self.input_data = torch.from_numpy(self.input_data)
         self.targets = torch.from_numpy(self.targets)
+        
+        # 以下参数 are used by model construction, 主要是为了 stick to class Exp_Classification() 这个 API. 
+        # i.e. 尽量不去修改 class Exp_Classification() 这个 class 中的模型构建,以及训练代码.
+        self.max_seq_len = self.input_data.shape[1]  # 这里因为是这个数据集的所有 sequence 都是一样长度。如果不是一样长度,还要再改
+        self.class_names = ['Cars', 'Drones', 'People'] # Cars:0 Drones:1 People:2
+        self.feature_df = np.ones((1, self.input_data.shape[2])) # 这里仅仅是为了 stick to class Exp_Classification() 中 def _build_model(self)
+
 
 
     def __getitem__(self, index):

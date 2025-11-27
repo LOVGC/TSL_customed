@@ -46,14 +46,14 @@ targets_test = targets[val_end:]
 
 # Save the split datasets
 output_dir = data_dir
-np.save(os.path.join(output_dir, 'input_data_train.npy'), input_data_train)
-np.save(os.path.join(output_dir, 'targets_train.npy'), targets_train)
+np.save(os.path.join(output_dir, 'input_data_TRAIN.npy'), input_data_train)
+np.save(os.path.join(output_dir, 'targets_TRAIN.npy'), targets_train)
 
-np.save(os.path.join(output_dir, 'input_data_val.npy'), input_data_val)
-np.save(os.path.join(output_dir, 'targets_val.npy'), targets_val)
+np.save(os.path.join(output_dir, 'input_data_VAL.npy'), input_data_val)
+np.save(os.path.join(output_dir, 'targets_VAL.npy'), targets_val)
 
-np.save(os.path.join(output_dir, 'input_data_test.npy'), input_data_test)
-np.save(os.path.join(output_dir, 'targets_test.npy'), targets_test)
+np.save(os.path.join(output_dir, 'input_data_TEST.npy'), input_data_test)
+np.save(os.path.join(output_dir, 'targets_TEST.npy'), targets_test)
 
 print("Data splitting and saving completed successfully.")
 print(f"Train set size: {len(input_data_train)}")
