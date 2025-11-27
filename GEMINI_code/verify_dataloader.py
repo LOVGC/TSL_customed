@@ -22,7 +22,7 @@ def verify_real_doppler_kaggle_dataloader():
     
     # 2. Get the dataset and dataloader for the 'train' flag
     try:
-        train_data_set, train_data_loader = data_provider(args, flag='train')
+        train_data_set, train_data_loader = data_provider(args, flag='TRAIN')
     except Exception as e:
         print(f"Error creating data provider for 'train' flag: {e}")
         return

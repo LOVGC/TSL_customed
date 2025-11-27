@@ -705,7 +705,7 @@ class UEAloader(Dataset):
 
 class Dataset_Real_Doppler_Kaggle(Dataset):
     def __init__(self, flag):
-        assert flag in ['TRAIN', 'TEST', 'VAL'], "Flag must be 'train', 'val', or 'test'."
+        assert flag in ['TRAIN', 'TEST', 'VAL'], "Flag must be 'TRAIN', 'VAL', or 'TEST'."
         self.flag = flag
         self.__read_data__()
 
