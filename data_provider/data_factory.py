@@ -1,5 +1,5 @@
 from data_provider.data_loader import Dataset_ETT_hour, Dataset_Berkley_sensor, Dataset_Simulate_ar, UEAloader, \
-    Dataset_Real_Doppler_Kaggle
+    Dataset_Real_Doppler_Kaggle, CMAPSSLoader
 from data_provider.uea import UEA_Collate_Fn
 from data_provider.berkely_sensor_data import collate_fn_for_None_type
 
@@ -11,6 +11,7 @@ data_dict = {
     'moiteid_3_temp_volt': Dataset_Berkley_sensor,
     'simulate_ar': Dataset_Simulate_ar,
     'real_doppler_kaggle': Dataset_Real_Doppler_Kaggle,
+    'C-MAPSS': CMAPSSLoader,
     'UEA': UEAloader  # classification task 的数据集全是用这个 UEAloader
 }
 

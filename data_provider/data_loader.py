@@ -176,6 +176,7 @@ class Dataset_ETT_minute(Dataset):
         self.scale = scale
         self.timeenc = timeenc
         self.freq = freq
+        self.seasonal_patterns = seasonal_patterns
 
         self.root_path = root_path
         self.data_path = data_path
@@ -456,6 +457,153 @@ class Dataset_Berkley_sensor(Dataset):
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
     
+
+
+class CMAPSSLoader(Dataset):
+    def __init__(self, args, root_path, flag='train', size=None,
+                 features='MS', data_path='train_FD001.txt',
+                 target='RUL', scale=True, timeenc=0, freq='c', seasonal_patterns=None):
+        # size [seq_len, label_len, pred_len]
+        self.args = args
+        # info
+        if size == None:
+            self.seq_len = 30
+            self.label_len = 10
+            self.pred_len = 5
+        else:
+            self.seq_len = size[0]
+            self.label_len = size[1]
+            self.pred_len = size[2]
+        # init
+        assert flag in ['train', 'test', 'val']
+        type_map = {'train': 0, 'val': 1, 'test': 2}
+        self.set_type = type_map[flag]
+
+        self.features = features  # 'MS', 'S', 'M'
+        self.target = target
+        self.scale = scale
+        self.timeenc = timeenc
+        self.freq = freq
+
+        self.root_path = root_path
+        self.data_path = data_path
+        self.__read_data__()
+
+    def __read_data__(self):
+        self.scaler = StandardScaler()
+        
+        # Read CMAPSS data (space-separated)
+        column_names = ['unit_number', 'cycle', 'setting1', 'setting2', 'setting3'] + \
+                      [f'sensor{i}' for i in range(1, 22)]
+        
+        df_raw = pd.read_csv(os.path.join(self.root_path, self.data_path),
+                            sep=r'\s+', names=column_names)
+        
+        # Group by unit_number
+        unit_groups = df_raw.groupby('unit_number')
+        
+        # For training data, calculate RUL as max_cycle - current_cycle
+        # For test data, we'll need to load the RUL file separately
+        if 'train' in self.data_path:
+            # Calculate RUL for training data
+            max_cycles = unit_groups['cycle'].max()
+            df_raw['RUL'] = df_raw.apply(lambda row: max_cycles[row['unit_number']] - row['cycle'], axis=1)
+            
+            # Split data into train, val, test based on unit_number
+            all_units = df_raw['unit_number'].unique()
+            num_units = len(all_units)
+            num_train = int(num_units * 0.7)
+            num_val = int(num_units * 0.2)
+            
+            train_units = all_units[:num_train]
+            val_units = all_units[num_train:num_train+num_val]
+            test_units = all_units[num_train+num_val:]
+            
+            # Create masks for each set
+            if self.set_type == 0:  # train
+                mask = df_raw['unit_number'].isin(train_units)
+            elif self.set_type == 1:  # val
+                mask = df_raw['unit_number'].isin(val_units)
+            else:  # test
+                mask = df_raw['unit_number'].isin(test_units)
+                
+            df_data = df_raw[mask]
+        else:  # test data
+            # For test data, we'll load the actual RUL values later
+            # For now, just use all data
+            df_data = df_raw
+            
+        # Select features
+        if self.features == 'M' or self.features == 'MS':
+            # Use all features except unit_number and cycle
+            cols_data = df_data.columns[2:]  # skip unit_number and cycle
+        elif self.features == 'S':
+            # Only use the target (RUL) - not sure if this makes sense for CMAPSS
+            cols_data = [self.target]
+        
+        df_features = df_data[cols_data]
+        
+        # Scale data
+        if self.scale:
+            self.scaler.fit(df_features.values)
+            data = self.scaler.transform(df_features.values)
+        else:
+            data = df_features.values
+        
+        # Create sequences for each unit
+        self.data_x = []
+        self.data_y = []
+        self.data_stamp = []
+        
+        unit_groups = df_data.groupby('unit_number')
+        
+        for unit_num, group in unit_groups:
+            unit_data = data[group.index - df_data.index[0]]  # adjust indices to be within the group
+            unit_cycles = group['cycle'].values
+            
+            # Create sequences
+            for i in range(len(unit_data) - self.seq_len - self.pred_len + 1):
+                s_begin = i
+                s_end = s_begin + self.seq_len
+                r_begin = s_end - self.label_len
+                r_end = r_begin + self.label_len + self.pred_len
+                
+                # Ensure we don't exceed the unit's data
+                if r_end <= len(unit_data):
+                    self.data_x.append(unit_data[s_begin:s_end])
+                    
+                    # For target, we only need the RUL at the end of the prediction window
+                    # Assuming RUL is the last column
+                    if 'RUL' in cols_data:
+                        rul_idx = cols_data.get_loc('RUL')
+                        self.data_y.append(unit_data[r_begin:r_end, rul_idx:rul_idx+1])
+                    else:
+                        # If RUL not in data, append a dummy value (will be replaced with actual RUL later)
+                        self.data_y.append(np.zeros((r_end - r_begin, 1)))
+
+                    
+                    # Create time stamps (just using cycle numbers)
+                    seq_x_mark = unit_cycles[s_begin:s_end].reshape(-1, 1)
+                    seq_y_mark = unit_cycles[r_begin:r_end].reshape(-1, 1)
+                    
+                    self.data_stamp.append((seq_x_mark, seq_y_mark))
+        
+        # Convert to numpy arrays
+        self.data_x = np.array(self.data_x)
+        self.data_y = np.array(self.data_y)
+
+    def __getitem__(self, index):
+        seq_x = self.data_x[index]
+        seq_y = self.data_y[index]
+        seq_x_mark, seq_y_mark = self.data_stamp[index]
+        
+        return seq_x, seq_y, seq_x_mark, seq_y_mark
+
+    def __len__(self):
+        return len(self.data_x)
+
+    def inverse_transform(self, data):
+        return self.scaler.inverse_transform(data)
 
 
 class Dataset_Simulate_ar(Dataset):
