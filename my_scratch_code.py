@@ -1,24 +1,43 @@
-import torch
-import torch.nn.functional as F
+import matplotlib.pyplot as plt
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]  # Windows
+plt.rcParams["axes.unicode_minus"] = False
 
-# 1. 模型的输出 logits（未经过 softmax）
-logits = torch.tensor([2.0, 1.0, 0.1])
+# Epoch 1-29
+epochs = list(range(1, 30))
 
-# 2. 目标标签（真实类别）
-target = torch.tensor([0])  # 目标是类别 0
+# Extracted from your log
+val_acc = [
+    0.844, 0.840, 0.904, 0.904, 0.919, 0.894, 0.912, 0.924, 0.916,
+    0.920, 0.920, 0.923, 0.914, 0.935, 0.929, 0.930, 0.927, 0.919,
+    0.937, 0.932, 0.935, 0.931, 0.933, 0.929, 0.934, 0.917, 0.925,
+    0.931, 0.931
+]
 
-# 手动计算 softmax 转换成概率
-exp_logits = torch.exp(logits)  # 对每个 logit 取指数
-softmax_probs = exp_logits / exp_logits.sum()  # 归一化为概率分布
+test_acc = [
+    0.838, 0.848, 0.913, 0.910, 0.909, 0.894, 0.917, 0.935, 0.926,
+    0.928, 0.929, 0.932, 0.923, 0.934, 0.935, 0.932, 0.933, 0.924,
+    0.935, 0.929, 0.934, 0.934, 0.938, 0.939, 0.935, 0.917, 0.928,
+    0.931, 0.935
+]
 
-# 手动计算交叉熵损失
-# 交叉熵损失是 -log(P(target))
-manual_loss = -torch.log(softmax_probs[target])  # 获取目标类别的预测概率并计算 log
+# 图 1：验证集准确率
+plt.figure()
+plt.plot(epochs, val_acc, marker="o")
+plt.xlabel("训练轮次（Epoch）")
+plt.ylabel("验证集准确率")
+plt.title("验证集准确率随训练轮次变化")
+plt.xticks(epochs)
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+plt.tight_layout()
+plt.show()
 
-print(f"手动计算的交叉熵损失: {manual_loss.item()}")
-
-# 3. 使用 PyTorch 的 CrossEntropyLoss 计算损失
-criterion = torch.nn.CrossEntropyLoss()
-pytorch_loss = criterion(logits.unsqueeze(0), target)  # logits 需要是 [batch_size, num_classes]
-
-print(f"PyTorch 计算的交叉熵损失: {pytorch_loss.item()}")
+# 图 2：测试集准确率
+plt.figure()
+plt.plot(epochs, test_acc, marker="o")
+plt.xlabel("训练轮次（Epoch）")
+plt.ylabel("测试集准确率")
+plt.title("测试集准确率随训练轮次变化")
+plt.xticks(epochs)
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+plt.tight_layout()
+plt.show()
