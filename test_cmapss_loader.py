@@ -7,7 +7,7 @@ from data_provider.data_factory import data_provider
 class Args:
     def __init__(self):
         self.data = 'C-MAPSS'
-        self.root_path = 'd:\\GD\\TSL_customed\\dataset'
+        self.root_path = os.path.join('dataset', 'CMaps', 'raw')
         self.data_path = 'train_FD001.txt'
         self.seq_len = 30
         self.label_len = 10

@@ -41,7 +41,7 @@
                 "--features", "M",
                 "--target", "OT", // 预测的目标 feature, 要预测哪个变量，i.e. 就是 raw data 中的哪一列的名字。
                 "--seq_len", "96",
-                "--label_len", "48",
+                "--label_len", "48",  // 这个没有用
                 "--pred_len", "96",
                 "--e_layers", "2",
                 "--d_layers", "1",

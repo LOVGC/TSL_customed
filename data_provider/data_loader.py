@@ -606,6 +606,7 @@ class CMAPSSLoader(Dataset):
         return self.scaler.inverse_transform(data)
 
 
+
 class Dataset_Simulate_ar(Dataset):
     def __init__(self, args, root_path, flag='train', size=None,
                  features='S', data_path='ar_data.csv',

@@ -147,7 +147,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     f_dim = -1 if self.args.features == 'MS' else 0
                     outputs = outputs[:, -self.args.pred_len:, f_dim:] # 意思就是：当需要预测的是一个单变量的时候，就用输出的 feature 维度的最后一个 feature 作为预测结果；当需要预测的是多变量的时候，就用输出的所有 feature 作为预测结果。
                                                                        
-                    batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                    batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)  # toDo: 这里其实需要改一下！
                     loss = criterion(outputs, batch_y)
                     train_loss.append(loss.item())
 
